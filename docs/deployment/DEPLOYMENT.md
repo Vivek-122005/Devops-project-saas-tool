@@ -34,5 +34,6 @@ To make the EC2 deployment fully live, set these GitHub repository secrets:
 - `EC2_SSH_KEY`
 - `EC2_PORT`
 - `EC2_APP_DIR`
+- `EC2_SERVICE_NAME` (optional, defaults to `shopsmart`)
 
-The workflow SSHs into the EC2 server and runs the idempotent deployment script. That script clones the repo if needed, pulls the target ref, installs dependencies, builds the frontend, initializes the SQLite database, and prepares the backend service.
+The workflow SSHs into the EC2 server and runs the idempotent deployment script. That script clones the repo if needed, pulls the target ref, installs dependencies, builds the frontend, initializes the SQLite database, and then runs service commands (`systemctl enable/restart`) for the backend.

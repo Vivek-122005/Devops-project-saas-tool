@@ -17,6 +17,7 @@ The previous generic SaaS template has been replaced with a domain-specific Shop
 - Full REST API for product catalog and orders
 - Prisma ORM with SQLite storage and idempotent DB bootstrap
 - Unit tests and integration tests
+- Playwright E2E flow (bonus rubric item)
 - GitHub Actions CI on `push` and `pull_request`
 - PR lint enforcement, Dependabot config, and idempotent setup/deploy scripts
 - EC2 deployment workflow scaffolding for GitHub Actions
@@ -91,6 +92,8 @@ Frontend:
 cd frontend
 npm run lint
 npm test
+npx playwright install chromium
+npm run test:e2e
 npm run build
 ```
 
@@ -101,6 +104,7 @@ npm run build
 - Frontend implementation: responsive React UI with API integration
 - Unit testing: backend validation tests and frontend component test
 - Integration testing: API + SQLite database tests with Supertest
+- E2E bonus: Playwright user-flow test (`frontend/e2e/shop-flow.e2e.js`)
 - PR checks / linting: ESLint runs in CI on PRs
 - Dependabot: [`.github/dependabot.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/dependabot.yml)
 - EC2 + GitHub integration: [`.github/workflows/deploy-ec2.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/workflows/deploy-ec2.yml)
@@ -109,6 +113,7 @@ npm run build
 
 ## Notes
 
+- Commit regularity is evaluated from your Git history over time, so keep using small logical commits during active development.
 - The EC2 deployment workflow is ready to use, but it still requires your GitHub repository secrets and target EC2 host values.
 - The repo keeps the `frontend/` and `backend/` layout so it stays easy for evaluators to review.
 - SQLite initialization is handled by an idempotent bootstrap script so the project can start consistently without a separate database server.

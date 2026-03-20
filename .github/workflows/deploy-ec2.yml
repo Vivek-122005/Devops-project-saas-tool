@@ -24,6 +24,7 @@ jobs:
             export REPO_URL="https://github.com/${{ github.repository }}.git"
             export DEPLOY_REF="${{ github.ref_name }}"
             export APP_DIR="${{ secrets.EC2_APP_DIR || '/opt/shopsmart' }}"
+            export SERVICE_NAME="${{ secrets.EC2_SERVICE_NAME || 'shopsmart' }}"
             if [ ! -d "$APP_DIR/.git" ]; then
               mkdir -p "$APP_DIR"
               git clone "$REPO_URL" "$APP_DIR"

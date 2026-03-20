@@ -19,5 +19,13 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off'
   },
+  overrides: [
+    {
+      files: ['playwright.config.js', 'e2e/**/*.js'],
+      env: {
+        node: true
+      }
+    }
+  ],
   ignorePatterns: ['dist']
 };
