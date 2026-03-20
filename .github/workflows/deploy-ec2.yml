@@ -83,5 +83,8 @@ jobs:
             fi
 
             cd "${APP_DIR}"
+            git fetch --all --prune
+            git checkout "${DEPLOY_REF}"
+            git pull --ff-only origin "${DEPLOY_REF}"
             bash scripts/ec2/bootstrap.sh
             bash scripts/ec2/deploy-app.sh
