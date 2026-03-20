@@ -44,7 +44,7 @@ ensure_nodejs() {
 }
 
 sudo mkdir -p "$APP_DIR"
-sudo chown -R "$USER":"$USER" "$APP_DIR"
+sudo chown "$USER":"$USER" "$APP_DIR"
 
 if ! command -v git >/dev/null 2>&1; then
   install_packages git
