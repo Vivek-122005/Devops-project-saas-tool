@@ -3,6 +3,7 @@
 ## Unit Testing
 
 - Backend: `backend/tests/unit/validateProduct.test.js`
+- Backend: `backend/tests/unit/validateOrder.test.js`
 - Frontend: `frontend/src/__tests__/App.test.jsx`
 
 ## Integration Testing
@@ -13,6 +14,9 @@
   - Admin-protected product CRUD
   - Public storefront listing
   - Order placement with persisted line items
+  - Stock conflict handling
+  - Order cancellation and delete flows with inventory restock
+  - Admin auth checks and order detail endpoint
 
 ## Why It Matters
 

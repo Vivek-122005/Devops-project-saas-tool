@@ -2,6 +2,38 @@ const prisma = require('./prisma');
 
 const SHIPPING_RATE = 7.5;
 
+function createServiceError(message, code) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
+function aggregateItemsByProduct(items) {
+  const quantityByProduct = new Map();
+
+  items.forEach((item) => {
+    const currentQuantity = quantityByProduct.get(item.productId) || 0;
+    quantityByProduct.set(item.productId, currentQuantity + item.quantity);
+  });
+
+  return quantityByProduct;
+}
+
+async function restockOrderItems(tx, items) {
+  const quantityByProduct = aggregateItemsByProduct(items);
+
+  for (const [productId, quantity] of quantityByProduct.entries()) {
+    await tx.product.update({
+      where: { id: productId },
+      data: {
+        stock: {
+          increment: quantity
+        }
+      }
+    });
+  }
+}
+
 async function createOrder(payload) {
   return prisma.$transaction(async (tx) => {
     const productIds = payload.items.map((item) => item.productId);
@@ -92,12 +124,61 @@ async function listOrders() {
 }
 
 async function updateOrderStatus(orderId, status) {
-  return prisma.shopOrder.update({
-    where: { id: orderId },
-    data: { status },
-    include: {
-      items: true
+  return prisma.$transaction(async (tx) => {
+    const existingOrder = await tx.shopOrder.findUnique({
+      where: { id: orderId },
+      include: {
+        items: true
+      }
+    });
+
+    if (!existingOrder) {
+      throw createServiceError('Order not found.', 'ORDER_NOT_FOUND');
     }
+
+    if (existingOrder.status === 'CANCELLED' && status !== 'CANCELLED') {
+      throw createServiceError(
+        'Cancelled orders cannot be moved to another status.',
+        'INVALID_STATUS_TRANSITION'
+      );
+    }
+
+    if (existingOrder.status !== 'CANCELLED' && status === 'CANCELLED') {
+      await restockOrderItems(tx, existingOrder.items);
+    }
+
+    return tx.shopOrder.update({
+      where: { id: orderId },
+      data: { status },
+      include: {
+        items: true
+      }
+    });
+  });
+}
+
+async function deleteOrder(orderId) {
+  return prisma.$transaction(async (tx) => {
+    const existingOrder = await tx.shopOrder.findUnique({
+      where: { id: orderId },
+      include: {
+        items: true
+      }
+    });
+
+    if (!existingOrder) {
+      throw createServiceError('Order not found.', 'ORDER_NOT_FOUND');
+    }
+
+    if (existingOrder.status !== 'CANCELLED') {
+      await restockOrderItems(tx, existingOrder.items);
+    }
+
+    await tx.shopOrder.delete({
+      where: { id: orderId }
+    });
+
+    return existingOrder;
   });
 }
 
@@ -105,5 +186,6 @@ module.exports = {
   createOrder,
   getOrder,
   listOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  deleteOrder
 };

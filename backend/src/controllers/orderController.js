@@ -57,7 +57,13 @@ async function updateOrderStatus(request, response, next) {
   try {
     const status =
       typeof request.body.status === 'string' ? request.body.status.trim() : '';
-    const allowedStatuses = ['PLACED', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+    const allowedStatuses = [
+      'PLACED',
+      'PROCESSING',
+      'SHIPPED',
+      'DELIVERED',
+      'CANCELLED'
+    ];
 
     if (!allowedStatuses.includes(status)) {
       response.status(400).json({
@@ -72,6 +78,38 @@ async function updateOrderStatus(request, response, next) {
     );
     response.json(order);
   } catch (error) {
+    if (error.code === 'ORDER_NOT_FOUND') {
+      response.status(404).json({ message: 'Order not found.' });
+      return;
+    }
+
+    if (error.code === 'INVALID_STATUS_TRANSITION') {
+      response.status(400).json({ message: error.message });
+      return;
+    }
+
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      response.status(404).json({ message: 'Order not found.' });
+      return;
+    }
+
+    next(error);
+  }
+}
+
+async function deleteOrder(request, response, next) {
+  try {
+    await orderService.deleteOrder(Number(request.params.id));
+    response.status(204).send();
+  } catch (error) {
+    if (error.code === 'ORDER_NOT_FOUND') {
+      response.status(404).json({ message: 'Order not found.' });
+      return;
+    }
+
     if (
       error instanceof PrismaClientKnownRequestError &&
       error.code === 'P2025'
@@ -88,5 +126,6 @@ module.exports = {
   createOrder,
   getOrder,
   listOrders,
-  updateOrderStatus
+  updateOrderStatus,
+  deleteOrder
 };
