@@ -38,7 +38,7 @@ jobs:
           fi
 
       - name: Deploy over SSH with PM2 (Backend + Frontend)
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.5
         env:
           REPO_URL: https://github.com/${{ github.repository }}.git
           DEPLOY_REF: ${{ github.ref_name }}
