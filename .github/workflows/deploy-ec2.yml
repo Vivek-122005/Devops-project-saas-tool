@@ -57,6 +57,20 @@ jobs:
             set -euo pipefail
             APP_DIR="${APP_DIR:-/opt/shopsmart}"
 
+            if ! command -v git >/dev/null 2>&1; then
+              if command -v apt-get >/dev/null 2>&1; then
+                sudo apt-get update
+                sudo apt-get install -y git
+              elif command -v dnf >/dev/null 2>&1; then
+                sudo dnf install -y git
+              elif command -v yum >/dev/null 2>&1; then
+                sudo yum install -y git
+              else
+                echo "git is required and no supported package manager was found."
+                exit 1
+              fi
+            fi
+
             if [ ! -d "${APP_DIR}" ]; then
               mkdir -p "${APP_DIR}"
             fi
@@ -66,4 +80,5 @@ jobs:
             fi
 
             cd "${APP_DIR}"
+            bash scripts/ec2/bootstrap.sh
             bash scripts/ec2/deploy-app.sh
