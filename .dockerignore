@@ -1,0 +1,14 @@
+.git
+.github
+.DS_Store
+node_modules
+**/node_modules
+**/dist
+**/coverage
+**/.env
+**/.env.local
+**/.env.*.local
+backend/prisma/*.db
+backend/prisma/*.db-journal
+backend/tests/integration/*.db
+backend/tests/integration/*.db-journal
