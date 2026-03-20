@@ -20,7 +20,7 @@ The previous generic SaaS template has been replaced with a domain-specific Shop
 - Playwright E2E flow (bonus rubric item)
 - GitHub Actions CI on `push` and `pull_request`
 - PR lint enforcement, Dependabot config, and idempotent setup/deploy scripts
-- EC2 backend auto-deploy using GitHub Actions + Amazon ECR + PM2
+- EC2 backend auto-deploy using GitHub Actions + SSH + PM2
 
 ## Tech Stack
 
@@ -28,7 +28,7 @@ The previous generic SaaS template has been replaced with a domain-specific Shop
 - Backend: Node.js, Express, Prisma
 - Database: SQLite
 - Testing: Vitest, Jest, Supertest
-- DevOps: GitHub Actions, Dependabot, EC2 scripts, ECR, PM2
+- DevOps: GitHub Actions, Dependabot, EC2 scripts, PM2
 
 ## Project Structure
 
@@ -108,13 +108,13 @@ npm run build
 - PR checks / linting: ESLint runs in CI on PRs
 - Dependabot: [`.github/dependabot.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/dependabot.yml)
 - EC2 + GitHub integration: [`.github/workflows/deploy-ec2.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/workflows/deploy-ec2.yml)
-- Idempotent scripts: [`scripts/setup.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/setup.sh), [`scripts/ec2/bootstrap.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/ec2/bootstrap.sh)
+- Idempotent scripts: [`scripts/setup.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/setup.sh), [`scripts/ec2/bootstrap.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/ec2/bootstrap.sh), [`scripts/ec2/deploy-app.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/ec2/deploy-app.sh)
 - Explanation: docs in [`docs/architecture/ARCHITECTURE.md`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/docs/architecture/ARCHITECTURE.md) and [`docs/deployment/DEPLOYMENT.md`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/docs/deployment/DEPLOYMENT.md)
 
 ## Notes
 
 - Commit regularity is evaluated from your Git history over time, so keep using small logical commits during active development.
-- The EC2 deployment workflow is ready for ECR image shipping and needs GitHub Actions secrets (`AWS_*`, `ECR_REPOSITORY`, `EC2_*`, backend runtime secrets).
+- The EC2 deployment workflow uses SSH + PM2 and needs GitHub Actions secrets (`EC2_*`, `BACKEND_ADMIN_KEY`, `BACKEND_FRONTEND_URL`).
 - The repo keeps the `frontend/` and `backend/` layout so it stays easy for evaluators to review.
 - SQLite initialization is handled by an idempotent bootstrap script so the project can start consistently without a separate database server.
 - Local admin key default: `socks-admin-123` (set via `ADMIN_KEY` in backend env).

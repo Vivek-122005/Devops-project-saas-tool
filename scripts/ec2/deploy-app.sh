@@ -3,47 +3,78 @@
 set -euo pipefail
 
 APP_DIR="${APP_DIR:-/opt/shopsmart}"
-SERVICE_NAME="${SERVICE_NAME:-shopsmart}"
+APP_NAME="${APP_NAME:-shopsmart-backend}"
+BACKEND_PORT="${BACKEND_PORT:-5001}"
+BACKEND_FRONTEND_URL="${BACKEND_FRONTEND_URL:-http://localhost:5173}"
+DEPLOY_REF="${DEPLOY_REF:-main}"
+REPO_URL="${REPO_URL:-}"
+BACKEND_ADMIN_KEY="${BACKEND_ADMIN_KEY:-}"
 
-mkdir -p "$APP_DIR"
-cd "$APP_DIR"
-
-if [ ! -d .git ]; then
-  git clone "${REPO_URL}" .
+if [ -z "${REPO_URL}" ]; then
+  echo "REPO_URL is required."
+  exit 1
 fi
 
+if [ -z "${BACKEND_ADMIN_KEY}" ]; then
+  echo "BACKEND_ADMIN_KEY is required."
+  exit 1
+fi
+
+mkdir -p "$APP_DIR"
+if [ ! -d "$APP_DIR/.git" ]; then
+  git clone "${REPO_URL}" "$APP_DIR"
+fi
+
+cd "$APP_DIR"
+
 git fetch --all --prune
-git checkout "${DEPLOY_REF:-main}"
-git pull --ff-only origin "${DEPLOY_REF:-main}"
+git checkout "${DEPLOY_REF}"
+git pull --ff-only origin "${DEPLOY_REF}"
 
 cp -n .env.example .env || true
-cp -n backend/.env.example backend/.env || true
 cp -n frontend/.env.example frontend/.env || true
 
+cat > backend/.env <<EOF
+BACKEND_PORT=${BACKEND_PORT}
+FRONTEND_URL=${BACKEND_FRONTEND_URL}
+DATABASE_URL=file:./dev.db
+ADMIN_KEY=${BACKEND_ADMIN_KEY}
+EOF
+
 cd backend
-npm install
+npm ci
 npx prisma generate
 npm run db:init
 npm run db:seed
 
-cd ../frontend
-npm install
-npm run build
+if ! command -v pm2 >/dev/null 2>&1; then
+  npm install -g pm2
+fi
 
-if command -v systemctl >/dev/null 2>&1; then
-  SERVICE_FILE="$APP_DIR/infrastructure/ec2/systemd/${SERVICE_NAME}.service"
-
-  if [ -f "$SERVICE_FILE" ] && sudo -n true >/dev/null 2>&1; then
-    sudo cp "$SERVICE_FILE" "/etc/systemd/system/${SERVICE_NAME}.service"
-    sudo systemctl daemon-reload
-    sudo systemctl enable "$SERVICE_NAME"
-    sudo systemctl restart "$SERVICE_NAME"
-    echo "Systemd service restarted: ${SERVICE_NAME}"
-  else
-    echo "Skipping service restart (missing service file or passwordless sudo unavailable)."
-  fi
+if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
+  pm2 restart "${APP_NAME}" --update-env
 else
-  echo "systemctl not available. Skipping service restart."
+  pm2 start ecosystem.config.cjs --only "${APP_NAME}"
+fi
+
+pm2 save || true
+
+if command -v curl >/dev/null 2>&1; then
+  healthy=0
+  for _ in $(seq 1 20); do
+    if curl -fsS "http://127.0.0.1:${BACKEND_PORT}/api/health" >/dev/null 2>&1; then
+      echo "Backend health check passed."
+      healthy=1
+      break
+    fi
+    sleep 2
+  done
+
+  if [ "${healthy}" -ne 1 ]; then
+    echo "Backend health check failed."
+    pm2 logs "${APP_NAME}" --lines 80 --nostream || true
+    exit 1
+  fi
 fi
 
 echo "ShopSmart deployed at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"

@@ -25,6 +25,24 @@ install_packages() {
   exit 1
 }
 
+ensure_nodejs() {
+  if command -v node >/dev/null 2>&1; then
+    return
+  fi
+
+  if ! command -v curl >/dev/null 2>&1; then
+    install_packages curl
+  fi
+
+  if command -v apt-get >/dev/null 2>&1; then
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  else
+    curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+  fi
+
+  install_packages nodejs
+}
+
 sudo mkdir -p "$APP_DIR"
 sudo chown -R "$USER":"$USER" "$APP_DIR"
 
@@ -32,23 +50,10 @@ if ! command -v git >/dev/null 2>&1; then
   install_packages git
 fi
 
-if ! command -v docker >/dev/null 2>&1; then
-  if command -v apt-get >/dev/null 2>&1; then
-    install_packages docker.io
-  else
-    install_packages docker
-  fi
-  sudo systemctl enable docker
-  sudo systemctl start docker
+ensure_nodejs
+
+if ! command -v pm2 >/dev/null 2>&1; then
+  sudo npm install -g pm2
 fi
 
-if ! command -v aws >/dev/null 2>&1; then
-  install_packages awscli
-fi
-
-if ! groups "$USER" | grep -q docker; then
-  sudo usermod -aG docker "$USER"
-  echo "Added $USER to docker group. Re-login is required for group changes."
-fi
-
-echo "EC2 host prepared for ShopSmart ECR + PM2 deployment."
+echo "EC2 host prepared for ShopSmart PM2 deployment."
