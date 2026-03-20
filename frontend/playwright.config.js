@@ -2,7 +2,13 @@ import { defineConfig } from '@playwright/test';
 
 const frontendPort = Number(process.env.E2E_FRONTEND_PORT || 4173);
 const backendPort = Number(process.env.E2E_BACKEND_PORT || 5001);
+const databaseUrl = process.env.E2E_DATABASE_URL || 'file:./e2e.db';
 const isCI = Boolean(process.env.CI);
+const backendEnv = [
+  `BACKEND_PORT=${backendPort}`,
+  `FRONTEND_URL=http://127.0.0.1:${frontendPort}`,
+  `DATABASE_URL=${databaseUrl}`
+].join(' ');
 
 export default defineConfig({
   testDir: './e2e',
@@ -23,9 +29,9 @@ export default defineConfig({
     {
       command: [
         'cd ../backend',
-        `BACKEND_PORT=${backendPort} FRONTEND_URL=http://127.0.0.1:${frontendPort} npm run db:init`,
-        `BACKEND_PORT=${backendPort} FRONTEND_URL=http://127.0.0.1:${frontendPort} npm run db:seed`,
-        `BACKEND_PORT=${backendPort} FRONTEND_URL=http://127.0.0.1:${frontendPort} npm run start`
+        `${backendEnv} npm run db:init`,
+        `${backendEnv} npm run db:seed`,
+        `${backendEnv} npm run start`
       ].join(' && '),
       url: `http://127.0.0.1:${backendPort}/api/health`,
       timeout: 120_000,
