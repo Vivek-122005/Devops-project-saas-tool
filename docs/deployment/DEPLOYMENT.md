@@ -29,7 +29,7 @@ The repository includes:
 - `backend/ecosystem.config.cjs`
 
 This deployment flow SSHs into EC2, pulls the latest code, installs backend dependencies, runs Prisma init/seed, and starts or restarts the backend with PM2.
-It also builds the frontend and serves it with Nginx on port `80`.
+It also builds the frontend and serves it directly with PM2 on a frontend port (default `4173`).
 
 ## Required GitHub Secrets
 
@@ -52,8 +52,9 @@ Set these in `Settings -> Secrets and variables -> Actions`:
 
 ### Frontend Runtime
 
-- `FRONTEND_DOMAIN` (optional, default `_`; use your domain like `vivekbuild.me`)
-- `FRONTEND_API_URL` (optional, default `/api`)
+- `BACKEND_PUBLIC_HOST` (optional, default: `EC2_HOST`; used to build fallback API URL)
+- `FRONTEND_PORT` (optional, default: `4173`)
+- `FRONTEND_API_URL` (optional, default: `http://<BACKEND_PUBLIC_HOST>:<BACKEND_PORT>/api`)
 
 ## One-Time EC2 Prep
 
@@ -65,7 +66,7 @@ cd /opt/shopsmart
 bash scripts/ec2/bootstrap.sh
 ```
 
-This installs Node.js, npm, PM2, Nginx, and prepares `/opt/shopsmart`.
+This installs Node.js, npm, PM2 (+ `serve`), and prepares `/opt/shopsmart`.
 
 ## What Deployment Does
 
@@ -75,6 +76,6 @@ This installs Node.js, npm, PM2, Nginx, and prepares `/opt/shopsmart`.
 4. Runs `npm ci`, `prisma generate`, `db:init`, and `db:seed`.
 5. Restarts existing PM2 app or starts it if first deploy.
 6. Builds frontend using `VITE_API_URL`.
-7. Writes Nginx config to serve `frontend/dist` and proxy `/api/*` to backend.
+7. Restarts existing PM2 frontend app or starts it if first deploy.
 8. Runs backend health check on `http://127.0.0.1:<BACKEND_PORT>/api/health`.
-9. Runs frontend health check on `http://127.0.0.1/`.
+9. Runs frontend health check on `http://127.0.0.1:<FRONTEND_PORT>/`.

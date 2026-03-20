@@ -77,19 +77,10 @@ fi
 
 ensure_nodejs
 
-if ! command -v pm2 >/dev/null 2>&1; then
-  sudo npm install -g pm2
+if ! command -v pm2 >/dev/null 2>&1 || ! command -v serve >/dev/null 2>&1; then
+  sudo npm install -g pm2 serve
 fi
 
 ensure_swap
 
-if ! command -v nginx >/dev/null 2>&1; then
-  install_packages nginx
-fi
-
-if command -v systemctl >/dev/null 2>&1; then
-  sudo systemctl enable nginx
-  sudo systemctl start nginx
-fi
-
-echo "EC2 host prepared for ShopSmart full-stack deployment (PM2 + Nginx)."
+echo "EC2 host prepared for ShopSmart full-stack deployment (PM2 only)."

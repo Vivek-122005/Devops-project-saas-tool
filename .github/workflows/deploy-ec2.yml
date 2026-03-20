@@ -1,4 +1,4 @@
-name: Deploy ShopSmart To EC2 (PM2 + Nginx)
+name: Deploy ShopSmart To EC2 (PM2 Only)
 
 on:
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy over SSH with PM2
+      - name: Deploy over SSH with PM2 (Backend + Frontend)
         uses: appleboy/ssh-action@v1.2.0
         env:
           REPO_URL: https://github.com/${{ github.repository }}.git
@@ -47,14 +47,15 @@ jobs:
           BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
           BACKEND_FRONTEND_URL: ${{ secrets.BACKEND_FRONTEND_URL }}
           BACKEND_ADMIN_KEY: ${{ secrets.BACKEND_ADMIN_KEY }}
-          FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN || secrets.EC2_HOST }}
+          PUBLIC_HOST: ${{ secrets.BACKEND_PUBLIC_HOST || secrets.EC2_HOST }}
+          FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
           FRONTEND_API_URL: ${{ secrets.FRONTEND_API_URL }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT || 22 }}
-          envs: REPO_URL,DEPLOY_REF,APP_DIR,APP_NAME,BACKEND_PORT,BACKEND_FRONTEND_URL,BACKEND_ADMIN_KEY,FRONTEND_DOMAIN,FRONTEND_API_URL
+          envs: REPO_URL,DEPLOY_REF,APP_DIR,APP_NAME,BACKEND_PORT,BACKEND_FRONTEND_URL,BACKEND_ADMIN_KEY,PUBLIC_HOST,FRONTEND_PORT,FRONTEND_API_URL
           script: |
             set -euo pipefail
             APP_DIR="${APP_DIR:-/opt/shopsmart}"
