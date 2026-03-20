@@ -6,7 +6,7 @@ APP_DIR="${APP_DIR:-/opt/shopsmart}"
 APP_NAME="${APP_NAME:-shopsmart-backend}"
 FRONTEND_APP_NAME="${FRONTEND_APP_NAME:-shopsmart-frontend}"
 BACKEND_PORT="${BACKEND_PORT:-5001}"
-BACKEND_FRONTEND_URL="${BACKEND_FRONTEND_URL:-http://localhost:5173}"
+BACKEND_FRONTEND_URL="${BACKEND_FRONTEND_URL:-}"
 PUBLIC_HOST="${PUBLIC_HOST:-localhost}"
 FRONTEND_PORT="${FRONTEND_PORT:-4173}"
 FRONTEND_API_URL="${FRONTEND_API_URL:-}"
@@ -32,6 +32,13 @@ fi
 if [ -z "${FRONTEND_API_URL}" ]; then
   FRONTEND_API_URL="http://${PRIMARY_PUBLIC_HOST}:${BACKEND_PORT}/api"
 fi
+
+if [ -z "${BACKEND_FRONTEND_URL}" ] || [ "${BACKEND_FRONTEND_URL}" = "http://localhost:5173" ] || [ "${BACKEND_FRONTEND_URL}" = "http://127.0.0.1:5173" ]; then
+  BACKEND_FRONTEND_URL="http://${PRIMARY_PUBLIC_HOST}:${FRONTEND_PORT}"
+fi
+
+# Always keep local dev origins allowed so browser CORS remains friendly after deploys.
+BACKEND_FRONTEND_URL="${BACKEND_FRONTEND_URL},http://localhost:5173,http://127.0.0.1:5173"
 
 mkdir -p "$APP_DIR"
 if [ ! -d "$APP_DIR/.git" ]; then

@@ -22,10 +22,9 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           BACKEND_ADMIN_KEY: ${{ secrets.BACKEND_ADMIN_KEY }}
-          BACKEND_FRONTEND_URL: ${{ secrets.BACKEND_FRONTEND_URL }}
         run: |
           missing=0
-          for key in EC2_HOST EC2_USER EC2_SSH_KEY BACKEND_ADMIN_KEY BACKEND_FRONTEND_URL; do
+          for key in EC2_HOST EC2_USER EC2_SSH_KEY BACKEND_ADMIN_KEY; do
             value="${!key:-}"
             if [ -z "${value}" ]; then
               echo "::error::Missing required GitHub secret: ${key}"

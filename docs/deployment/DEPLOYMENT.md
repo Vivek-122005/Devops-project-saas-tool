@@ -45,7 +45,7 @@ Set these in `Settings -> Secrets and variables -> Actions`:
 ### Backend Runtime
 
 - `BACKEND_ADMIN_KEY`
-- `BACKEND_FRONTEND_URL` (example: `https://your-frontend-domain.com`)
+- `BACKEND_FRONTEND_URL` (optional; if empty or localhost, deploy auto-uses `http://<BACKEND_PUBLIC_HOST>:<FRONTEND_PORT>`)
 - `EC2_APP_DIR` (optional, default: `/opt/shopsmart`)
 - `EC2_APP_NAME` (optional, default: `shopsmart-backend`)
 - `BACKEND_PORT` (optional, default: `5001`)
