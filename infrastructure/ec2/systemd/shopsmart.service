@@ -1,0 +1,14 @@
+[Unit]
+Description=ShopSmart Backend API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/shopsmart
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/env npm start --prefix /opt/shopsmart/backend
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

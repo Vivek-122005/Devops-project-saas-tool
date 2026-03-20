@@ -1,406 +1,115 @@
-# 🚀 Production-Grade SaaS Platform
+# ShopSmart Socks Platform
 
-A comprehensive, production-ready SaaS application template with full DevOps infrastructure, designed for scalability, security, and maintainability.
+ShopSmart is now a full socks ecommerce platform with two user experiences:
 
-## 📋 SaaS Product Ideas
+- Customer storefront for browsing aesthetic socks, adding to cart, and placing orders
+- Admin panel for managing catalog inventory and order status
 
-This repository can be used to build any of these production-ready SaaS products:
+The stack remains aligned to the Phase 1 DevOps rubric: React frontend, Express backend, Prisma + SQLite data layer, CI, lint checks, testing, and architecture documentation.
 
-### 1. **TeamSync** - Team Collaboration & Project Management Platform
-A modern alternative to Slack + Asana, combining real-time team communication with project management.
+## What Changed
 
-**Key Features:**
-- Real-time messaging and channels
-- Task and project management with Kanban boards
-- File sharing and collaborative document editing
-- Time tracking and productivity analytics
-- Integration with GitHub, Jira, and Google Workspace
-- Role-based access control (RBAC)
-- Multi-tenant architecture
+The previous generic SaaS template has been replaced with a domain-specific ShopSmart implementation. The platform now includes:
 
-**Tech Stack:** React, Node.js, PostgreSQL, Redis, Socket.io, S3, WebRTC
+- Customer-focused ecommerce storefront for socks
+- Admin panel with protected CRUD APIs (`x-admin-key`)
+- Order placement workflow and admin order tracking
+- Full REST API for product catalog and orders
+- Prisma ORM with SQLite storage and idempotent DB bootstrap
+- Unit tests and integration tests
+- GitHub Actions CI on `push` and `pull_request`
+- PR lint enforcement, Dependabot config, and idempotent setup/deploy scripts
+- EC2 deployment workflow scaffolding for GitHub Actions
 
-### 2. **CloudMonitor Pro** - Infrastructure Monitoring & Observability Platform
-Comprehensive monitoring solution for cloud infrastructure and applications.
+## Tech Stack
 
-**Key Features:**
-- Real-time infrastructure monitoring (CPU, memory, disk, network)
-- Application performance monitoring (APM)
-- Log aggregation and analysis
-- Custom dashboards and alerting
-- Incident management and on-call scheduling
-- API monitoring and synthetic checks
-- Cost optimization insights
-- Multi-cloud support (AWS, GCP, Azure)
+- Frontend: React, Vite, CSS
+- Backend: Node.js, Express, Prisma
+- Database: SQLite
+- Testing: Vitest, Jest, Supertest
+- DevOps: GitHub Actions, Dependabot, EC2 scripts
 
-**Tech Stack:** React, Node.js, TimescaleDB, InfluxDB, Grafana, Prometheus, Elasticsearch
+## Project Structure
 
-### 3. **DevToolbox** - Developer Productivity Suite
-All-in-one platform for developers with code snippets, API testing, and collaboration tools.
-
-**Key Features:**
-- Code snippet management with syntax highlighting
-- API testing and documentation (Postman alternative)
-- Database query editor and visualization
-- Regex tester and JSON formatter
-- Team collaboration and sharing
-- Version control for snippets
-- Chrome extension for quick access
-- Dark mode and customizable themes
-
-**Tech Stack:** React, Node.js, MongoDB, Redis, Elasticsearch
-
----
-
-## 🏗️ Repository Structure
-
-```
+```text
 .
-├── frontend/                 # React frontend application
-│   ├── src/
-│   ├── public/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── README.md
-│
-├── backend/                  # Node.js/Express backend API
-│   ├── src/
-│   ├── tests/
-│   ├── Dockerfile
-│   ├── package.json
-│   └── README.md
-│
-├── infrastructure/           # Infrastructure as Code
-│   ├── terraform/           # Terraform configurations
-│   ├── kubernetes/          # K8s manifests
-│   ├── helm/               # Helm charts
-│   └── ansible/            # Configuration management
-│
-├── .github/
-│   ├── workflows/          # GitHub Actions CI/CD
-│   │   ├── ci.yml
-│   │   ├── cd-staging.yml
-│   │   └── cd-production.yml
-│   ├── ISSUE_TEMPLATE/
-│   └── PULL_REQUEST_TEMPLATE.md
-│
-├── docs/                    # Documentation
-│   ├── architecture/
-│   ├── api/
-│   ├── deployment/
-│   └── security/
-│
-├── scripts/                 # Utility scripts
-│   ├── setup.sh
-│   ├── deploy.sh
-│   └── backup.sh
-│
-├── docker-compose.yml       # Local development setup
-├── docker-compose.prod.yml  # Production setup
-├── .gitignore
-├── .env.example
-├── LICENSE
-└── README.md
+├── backend
+│   ├── prisma
+│   ├── src
+│   └── tests
+├── frontend
+│   └── src
+├── docs
+├── scripts
+├── infrastructure
+└── .github
 ```
 
-## 🚀 Quick Start
+## Local Setup
 
-### Prerequisites
+### 1. Install dependencies and seed the database
 
-- Docker & Docker Compose (v20.10+)
-- Node.js (v18+)
-- Git
-- PostgreSQL (v14+) for production
-
-### Local Development Setup
-
-1. **Clone the repository**
 ```bash
-git clone https://github.com/Vivek-122005/Devops-project-saas-tool.git
-cd Devops-project-saas-tool
+./scripts/setup.sh
 ```
 
-2. **Set up environment variables**
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
+### 2. Start the backend
 
-3. **Start the application with Docker Compose**
-```bash
-docker-compose up -d
-```
-
-4. **Access the application**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- API Documentation: http://localhost:5000/api-docs
-
-### Development Without Docker
-
-**Backend:**
 ```bash
 cd backend
-npm install
 npm run dev
 ```
 
-**Frontend:**
+### 3. Start the frontend
+
 ```bash
 cd frontend
-npm install
-npm start
+npm run dev
 ```
 
-## 🔧 Technology Stack
+### 4. Open the app
 
-### Frontend
-- **Framework:** React 18 with TypeScript
-- **State Management:** Redux Toolkit
-- **UI Library:** Material-UI / Tailwind CSS
-- **Testing:** Jest, React Testing Library
-- **Build Tool:** Vite
+- Frontend: `http://localhost:5173`
+- Backend health: `http://localhost:5001/api/health`
+- Store products API: `http://localhost:5001/api/products?scope=store`
+- Orders API: `http://localhost:5001/api/orders`
+- Admin APIs: `http://localhost:5001/api/admin/*` (requires `x-admin-key`)
 
-### Backend
-- **Runtime:** Node.js 18 LTS
-- **Framework:** Express.js
-- **Database:** PostgreSQL (primary), Redis (cache)
-- **ORM:** Prisma / TypeORM
-- **Authentication:** JWT, OAuth 2.0
-- **Testing:** Jest, Supertest
-- **API Documentation:** Swagger/OpenAPI
+## Testing and Linting
 
-### Infrastructure
-- **Containerization:** Docker, Docker Compose
-- **Orchestration:** Kubernetes
-- **IaC:** Terraform
-- **CI/CD:** GitHub Actions
-- **Monitoring:** Prometheus, Grafana
-- **Logging:** ELK Stack (Elasticsearch, Logstash, Kibana)
-- **Cloud:** AWS (adaptable to GCP/Azure)
-
-## 📦 Docker & Containerization
-
-### Build Images
+Backend:
 
 ```bash
-# Build all services
-docker-compose build
-
-# Build specific service
-docker-compose build frontend
-docker-compose build backend
-```
-
-### Production Deployment
-
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-## 🔄 CI/CD Pipeline
-
-Our GitHub Actions workflows provide:
-
-### 1. **Continuous Integration** (`.github/workflows/ci.yml`)
-- Runs on every push and pull request
-- Linting and code quality checks
-- Unit and integration tests
-- Security vulnerability scanning
-- Build verification
-
-### 2. **Staging Deployment** (`.github/workflows/cd-staging.yml`)
-- Triggered on merge to `develop` branch
-- Automated deployment to staging environment
-- Smoke tests
-- Notification to team
-
-### 3. **Production Deployment** (`.github/workflows/cd-production.yml`)
-- Triggered on merge to `main` branch or release tags
-- Blue-green deployment strategy
-- Database migrations
-- Health checks
-- Rollback capability
-- Notification and monitoring
-
-## 🌿 Branching Strategy (Git Flow)
-
-```
-main          Production-ready code
-  └─ release/* Release branches
-develop       Integration branch
-  └─ feature/* Feature branches
-  └─ bugfix/*  Bug fix branches
-hotfix/*      Emergency production fixes
-```
-
-### Branch Naming Convention
-
-- `feature/TICKET-123-add-user-authentication`
-- `bugfix/TICKET-456-fix-login-error`
-- `hotfix/critical-security-patch`
-- `release/v1.2.0`
-
-### Commit Message Convention
-
-We follow [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-feat: add user profile page
-fix: resolve database connection timeout
-docs: update API documentation
-chore: update dependencies
-test: add unit tests for auth service
-refactor: restructure user service
-perf: optimize database queries
-ci: update GitHub Actions workflow
-```
-
-## 🔐 Security Best Practices
-
-### Environment Variables
-- Never commit `.env` files
-- Use secrets management (AWS Secrets Manager, HashiCorp Vault)
-- Rotate credentials regularly
-- Use different credentials for each environment
-
-### Code Security
-- Regular dependency updates (`npm audit`, `dependabot`)
-- Static code analysis (SonarQube, CodeQL)
-- Container image scanning (Trivy, Snyk)
-- API rate limiting and DDoS protection
-- Input validation and sanitization
-- SQL injection prevention (parameterized queries)
-- XSS protection (CSP headers)
-
-### Authentication & Authorization
-- JWT with short expiration times
-- Refresh token rotation
-- OAuth 2.0 for third-party integrations
-- Role-Based Access Control (RBAC)
-- Multi-Factor Authentication (MFA)
-- Password hashing (bcrypt, Argon2)
-
-### Network Security
-- HTTPS only (TLS 1.3)
-- CORS configuration
-- Firewall rules
-- VPC and subnet isolation
-- Private container registries
-
-## 📊 Monitoring & Observability
-
-### Metrics
-- Application metrics (Prometheus)
-- Infrastructure metrics (CloudWatch, Datadog)
-- Custom business metrics
-
-### Logging
-- Structured logging (JSON format)
-- Centralized log aggregation (ELK Stack)
-- Log retention policies
-- Log-based alerting
-
-### Tracing
-- Distributed tracing (Jaeger, Zipkin)
-- Request ID propagation
-- Performance profiling
-
-### Alerting
-- Slack/PagerDuty integration
-- Alert escalation policies
-- On-call rotation
-
-## 🧪 Testing Strategy
-
-### Test Pyramid
-```
-        /\
-       /E2E\         End-to-End Tests (5%)
-      /------\
-     /Integration\   Integration Tests (15%)
-    /------------\
-   /   Unit Tests  \  Unit Tests (80%)
-  /----------------\
-```
-
-### Test Commands
-
-```bash
-# Backend tests
 cd backend
-npm test                 # Run all tests
-npm run test:unit        # Unit tests only
-npm run test:integration # Integration tests
-npm run test:coverage    # Coverage report
-
-# Frontend tests
-cd frontend
-npm test                 # Run all tests
-npm run test:watch       # Watch mode
-npm run test:coverage    # Coverage report
+npm run lint
+npm test
 ```
 
-## 🚀 Deployment
-
-### Staging Environment
-- Automatic deployment on merge to `develop`
-- URL: https://staging.yourapp.com
-- Database: Separate staging database
-- Test data available
-
-### Production Environment
-- Manual approval required
-- URL: https://app.yourapp.com
-- Database: Production database with backups
-- Zero-downtime deployment
-
-### Rollback Procedure
+Frontend:
 
 ```bash
-# Using Kubernetes
-kubectl rollout undo deployment/backend-deployment
-
-# Using Docker
-docker-compose -f docker-compose.prod.yml down
-docker-compose -f docker-compose.prod.yml up -d --scale backend=2
+cd frontend
+npm run lint
+npm test
+npm run build
 ```
 
-## 📚 Documentation
+## Rubric Coverage
 
-- **API Documentation:** Available at `/api-docs` (Swagger UI)
-- **Architecture Docs:** See `docs/architecture/`
-- **Deployment Guide:** See `docs/deployment/`
-- **Security Policies:** See `docs/security/`
-- **Contributing Guide:** See `CONTRIBUTING.md`
+- Commit regularity: workflow-ready repository and clean project structure
+- GitHub workflows / CI: [`.github/workflows/ci.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/workflows/ci.yml)
+- Frontend implementation: responsive React UI with API integration
+- Unit testing: backend validation tests and frontend component test
+- Integration testing: API + SQLite database tests with Supertest
+- PR checks / linting: ESLint runs in CI on PRs
+- Dependabot: [`.github/dependabot.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/dependabot.yml)
+- EC2 + GitHub integration: [`.github/workflows/deploy-ec2.yml`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/.github/workflows/deploy-ec2.yml)
+- Idempotent scripts: [`scripts/setup.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/setup.sh), [`scripts/ec2/deploy-app.sh`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/scripts/ec2/deploy-app.sh)
+- Explanation: docs in [`docs/architecture/ARCHITECTURE.md`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/docs/architecture/ARCHITECTURE.md) and [`docs/deployment/DEPLOYMENT.md`](/Users/vivekvishnoi/Devops/Devops-project-saas-tool/docs/deployment/DEPLOYMENT.md)
 
-## 🤝 Contributing
+## Notes
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with modern best practices
-- Inspired by industry-leading SaaS architectures
-- Community contributions welcome
-
-## 📞 Support
-
-- **Documentation:** https://docs.yourapp.com
-- **Issues:** https://github.com/Vivek-122005/Devops-project-saas-tool/issues
-- **Email:** support@yourapp.com
-- **Slack:** [Join our community](https://slack.yourapp.com)
-
----
-
-**Built with ❤️ for the DevOps community**
+- The EC2 deployment workflow is ready to use, but it still requires your GitHub repository secrets and target EC2 host values.
+- The repo keeps the `frontend/` and `backend/` layout so it stays easy for evaluators to review.
+- SQLite initialization is handled by an idempotent bootstrap script so the project can start consistently without a separate database server.
+- Local admin key default: `socks-admin-123` (set via `ADMIN_KEY` in backend env).

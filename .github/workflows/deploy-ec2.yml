@@ -1,0 +1,32 @@
+name: Deploy ShopSmart To EC2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT || 22 }}
+          script: |
+            export REPO_URL="https://github.com/${{ github.repository }}.git"
+            export DEPLOY_REF="${{ github.ref_name }}"
+            export APP_DIR="${{ secrets.EC2_APP_DIR || '/opt/shopsmart' }}"
+            if [ ! -d "$APP_DIR/.git" ]; then
+              mkdir -p "$APP_DIR"
+              git clone "$REPO_URL" "$APP_DIR"
+            fi
+            cd "$APP_DIR"
+            bash scripts/ec2/deploy-app.sh

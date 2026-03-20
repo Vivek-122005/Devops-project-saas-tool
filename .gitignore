@@ -1,90 +1,17 @@
-# Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# Environment variables
+dist/
+coverage/
+.DS_Store
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
 .env.*.local
-
-# Build outputs
-dist/
-build/
-out/
-.next/
-*.log
-
-# IDE & Editors
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-*.sublime-workspace
-*.sublime-project
-
-# Testing
-coverage/
-*.coverage
-.nyc_output
-.pytest_cache/
-__pycache__/
-
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-terraform.tfvars
-*.tfvars
-
-# Docker
-*.dockerignore
-
-# Logs
-logs/
-*.log
+backend/prisma/*.db
+backend/prisma/*.db-journal
+backend/tests/integration/*.db
+backend/tests/integration/*.db-journal
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
-
-# OS
-.DS_Store
-Thumbs.db
-*.swp
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Security
-*.pem
-*.key
-*.cert
-secrets/
-.secrets/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-
-# AWS
-.aws/
-*.pem
-
-# Backup files
-*.backup
-*.bak
-*.old
+.idea/
+.vscode/
+*.log
