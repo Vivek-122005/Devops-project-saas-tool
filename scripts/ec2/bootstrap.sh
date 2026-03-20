@@ -56,4 +56,13 @@ if ! command -v pm2 >/dev/null 2>&1; then
   sudo npm install -g pm2
 fi
 
-echo "EC2 host prepared for ShopSmart PM2 deployment."
+if ! command -v nginx >/dev/null 2>&1; then
+  install_packages nginx
+fi
+
+if command -v systemctl >/dev/null 2>&1; then
+  sudo systemctl enable nginx
+  sudo systemctl start nginx
+fi
+
+echo "EC2 host prepared for ShopSmart full-stack deployment (PM2 + Nginx)."

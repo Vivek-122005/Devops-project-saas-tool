@@ -20,7 +20,7 @@ The previous generic SaaS template has been replaced with a domain-specific Shop
 - Playwright E2E flow (bonus rubric item)
 - GitHub Actions CI on `push` and `pull_request`
 - PR lint enforcement, Dependabot config, and idempotent setup/deploy scripts
-- EC2 backend auto-deploy using GitHub Actions + SSH + PM2
+- EC2 full-stack auto-deploy using GitHub Actions + SSH + PM2 + Nginx
 
 ## Tech Stack
 
@@ -28,7 +28,7 @@ The previous generic SaaS template has been replaced with a domain-specific Shop
 - Backend: Node.js, Express, Prisma
 - Database: SQLite
 - Testing: Vitest, Jest, Supertest
-- DevOps: GitHub Actions, Dependabot, EC2 scripts, PM2
+- DevOps: GitHub Actions, Dependabot, EC2 scripts, PM2, Nginx
 
 ## Project Structure
 
@@ -114,7 +114,7 @@ npm run build
 ## Notes
 
 - Commit regularity is evaluated from your Git history over time, so keep using small logical commits during active development.
-- The EC2 deployment workflow uses SSH + PM2 and needs GitHub Actions secrets (`EC2_*`, `BACKEND_ADMIN_KEY`, `BACKEND_FRONTEND_URL`).
+- The EC2 deployment workflow uses SSH + PM2 + Nginx and needs GitHub Actions secrets (`EC2_*`, backend runtime secrets, and optional frontend runtime secrets).
 - The repo keeps the `frontend/` and `backend/` layout so it stays easy for evaluators to review.
 - SQLite initialization is handled by an idempotent bootstrap script so the project can start consistently without a separate database server.
 - Local admin key default: `socks-admin-123` (set via `ADMIN_KEY` in backend env).
