@@ -43,6 +43,31 @@ ensure_nodejs() {
   install_packages nodejs
 }
 
+ensure_swap() {
+  if command -v swapon >/dev/null 2>&1 && swapon --show | grep -q '/swapfile'; then
+    return
+  fi
+
+  if [ -f /swapfile ]; then
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile >/dev/null 2>&1 || true
+    sudo swapon /swapfile >/dev/null 2>&1 || true
+  else
+    if command -v fallocate >/dev/null 2>&1; then
+      sudo fallocate -l 2G /swapfile
+    else
+      sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+    fi
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+  fi
+
+  if ! grep -q '^/swapfile ' /etc/fstab; then
+    echo '/swapfile swap swap defaults 0 0' | sudo tee -a /etc/fstab >/dev/null
+  fi
+}
+
 sudo mkdir -p "$APP_DIR"
 sudo chown "$USER":"$USER" "$APP_DIR"
 
@@ -55,6 +80,8 @@ ensure_nodejs
 if ! command -v pm2 >/dev/null 2>&1; then
   sudo npm install -g pm2
 fi
+
+ensure_swap
 
 if ! command -v nginx >/dev/null 2>&1; then
   install_packages nginx

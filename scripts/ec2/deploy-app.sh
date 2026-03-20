@@ -44,7 +44,7 @@ ADMIN_KEY=${BACKEND_ADMIN_KEY}
 EOF
 
 cd backend
-npm ci
+npm ci --no-audit --no-fund
 npx prisma generate
 npm run db:init
 npm run db:seed
@@ -62,7 +62,7 @@ fi
 pm2 save || true
 
 cd ../frontend
-npm ci
+npm ci --no-audit --no-fund
 cat > .env <<EOF
 VITE_API_URL=${FRONTEND_API_URL}
 EOF
