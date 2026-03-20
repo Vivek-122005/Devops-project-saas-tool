@@ -30,8 +30,14 @@ if [ -z "${PRIMARY_PUBLIC_HOST}" ]; then
 fi
 
 if [ -z "${FRONTEND_API_URL}" ]; then
-  FRONTEND_API_URL="http://${PRIMARY_PUBLIC_HOST}:${BACKEND_PORT}/api"
+  FRONTEND_API_URL="http://${PRIMARY_PUBLIC_HOST}:${BACKEND_PORT}"
 fi
+
+FRONTEND_API_URL="${FRONTEND_API_URL%/}"
+if [ "${FRONTEND_API_URL}" = "/api" ] || [ "${FRONTEND_API_URL}" = "api" ]; then
+  FRONTEND_API_URL="http://${PRIMARY_PUBLIC_HOST}:${BACKEND_PORT}"
+fi
+FRONTEND_API_URL="${FRONTEND_API_URL%/api}"
 
 if [ -z "${BACKEND_FRONTEND_URL}" ] || [ "${BACKEND_FRONTEND_URL}" = "http://localhost:5173" ] || [ "${BACKEND_FRONTEND_URL}" = "http://127.0.0.1:5173" ]; then
   BACKEND_FRONTEND_URL="http://${PRIMARY_PUBLIC_HOST}:${FRONTEND_PORT}"

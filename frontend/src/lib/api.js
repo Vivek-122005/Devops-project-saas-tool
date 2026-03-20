@@ -1,4 +1,14 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5001').replace(/\/+$/, '');
+
+function buildRequestUrl(path) {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+  if (API_URL.endsWith('/api') && normalizedPath.startsWith('/api')) {
+    return `${API_URL.slice(0, -4)}${normalizedPath}`;
+  }
+
+  return `${API_URL}${normalizedPath}`;
+}
 
 async function request(path, options = {}) {
   const headers = {
@@ -6,7 +16,7 @@ async function request(path, options = {}) {
     ...(options.headers || {})
   };
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(buildRequestUrl(path), {
     headers,
     ...options
   });

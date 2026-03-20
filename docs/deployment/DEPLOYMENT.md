@@ -54,7 +54,7 @@ Set these in `Settings -> Secrets and variables -> Actions`:
 
 - `BACKEND_PUBLIC_HOST` (optional, default: `EC2_HOST`; used to build fallback API URL)
 - `FRONTEND_PORT` (optional, default: `4173`)
-- `FRONTEND_API_URL` (optional, default: `http://<BACKEND_PUBLIC_HOST>:<BACKEND_PORT>/api`)
+- `FRONTEND_API_URL` (optional, default: `http://<BACKEND_PUBLIC_HOST>:<BACKEND_PORT>`; deploy auto-normalizes if `/api` is accidentally included)
 
 ## One-Time EC2 Prep
 
