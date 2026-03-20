@@ -6,7 +6,7 @@ APP_DIR="${APP_DIR:-/opt/shopsmart}"
 APP_NAME="${APP_NAME:-shopsmart-backend}"
 BACKEND_PORT="${BACKEND_PORT:-5001}"
 BACKEND_FRONTEND_URL="${BACKEND_FRONTEND_URL:-http://localhost:5173}"
-FRONTEND_DOMAIN="${FRONTEND_DOMAIN:-_}"
+FRONTEND_DOMAIN="${FRONTEND_DOMAIN:-localhost}"
 FRONTEND_API_URL="${FRONTEND_API_URL:-/api}"
 DEPLOY_REF="${DEPLOY_REF:-main}"
 REPO_URL="${REPO_URL:-}"
@@ -20,6 +20,11 @@ fi
 if [ -z "${BACKEND_ADMIN_KEY}" ]; then
   echo "BACKEND_ADMIN_KEY is required."
   exit 1
+fi
+
+PRIMARY_FRONTEND_DOMAIN="$(printf '%s' "${FRONTEND_DOMAIN%%,*}" | sed -E 's#^https?://##; s#/.*$##' | xargs)"
+if [ -z "${PRIMARY_FRONTEND_DOMAIN}" ]; then
+  PRIMARY_FRONTEND_DOMAIN="localhost"
 fi
 
 mkdir -p "$APP_DIR"
@@ -81,7 +86,7 @@ fi
 sudo tee /etc/nginx/conf.d/shopsmart.conf >/dev/null <<EOF
 server {
   listen 80;
-  server_name ${FRONTEND_DOMAIN};
+  server_name ${PRIMARY_FRONTEND_DOMAIN};
   root ${APP_DIR}/frontend/dist;
   index index.html;
 
@@ -130,7 +135,7 @@ if command -v curl >/dev/null 2>&1; then
 
   frontend_healthy=0
   for _ in $(seq 1 20); do
-    if curl -fsS "http://127.0.0.1/" >/dev/null 2>&1; then
+    if curl -fsS -H "Host: ${PRIMARY_FRONTEND_DOMAIN}" "http://127.0.0.1/" >/dev/null 2>&1; then
       echo "Frontend health check passed."
       frontend_healthy=1
       break

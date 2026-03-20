@@ -47,7 +47,7 @@ jobs:
           BACKEND_PORT: ${{ secrets.BACKEND_PORT }}
           BACKEND_FRONTEND_URL: ${{ secrets.BACKEND_FRONTEND_URL }}
           BACKEND_ADMIN_KEY: ${{ secrets.BACKEND_ADMIN_KEY }}
-          FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN }}
+          FRONTEND_DOMAIN: ${{ secrets.FRONTEND_DOMAIN || secrets.EC2_HOST }}
           FRONTEND_API_URL: ${{ secrets.FRONTEND_API_URL }}
         with:
           host: ${{ secrets.EC2_HOST }}
