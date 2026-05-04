@@ -15,5 +15,8 @@ yarn-error.log*
 .idea/
 .vscode/
 *.log
+.terraform/
+*.tfstate
+*.tfstate.*
 frontend/playwright-report/
 frontend/test-results/

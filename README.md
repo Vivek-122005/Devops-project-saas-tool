@@ -21,6 +21,7 @@ The previous generic SaaS template has been replaced with a domain-specific Shop
 - GitHub Actions CI on `push` and `pull_request`
 - PR lint enforcement, Dependabot config, and idempotent setup/deploy scripts
 - EC2 full-stack auto-deploy using GitHub Actions + SSH + PM2
+- ECS/Fargate deployment path with Terraform and GitHub Actions
 
 ## Tech Stack
 
@@ -115,6 +116,7 @@ npm run build
 
 - Commit regularity is evaluated from your Git history over time, so keep using small logical commits during active development.
 - The EC2 deployment workflow uses SSH + PM2 and needs GitHub Actions secrets (`EC2_*`, backend runtime secrets, and optional frontend runtime secrets).
+- The ECS deployment workflow uses Terraform state secrets and AWS credentials, then pushes the bundled app image to ECR and updates ECS.
 - The repo keeps the `frontend/` and `backend/` layout so it stays easy for evaluators to review.
 - SQLite initialization is handled by an idempotent bootstrap script so the project can start consistently without a separate database server.
 - Local admin key default: `socks-admin-123` (set via `ADMIN_KEY` in backend env).

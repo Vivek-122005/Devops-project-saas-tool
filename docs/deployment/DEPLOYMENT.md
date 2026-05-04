@@ -31,6 +31,49 @@ The repository includes:
 This deployment flow SSHs into EC2, pulls the latest code, installs backend dependencies, runs Prisma init/seed, and starts or restarts the backend with PM2.
 It also builds the frontend and serves it directly with PM2 on a frontend port (default `4173`).
 
+## ECS Deployment Path
+
+The repository also includes a full ECS/Fargate deployment path:
+
+- `.github/workflows/deploy-ecs.yml`
+- `Dockerfile` at the repository root
+- `infrastructure/ecs/`
+
+This path builds one container image that bundles the React frontend into the backend container, pushes it to ECR, and deploys it behind an Application Load Balancer on ECS.
+The backend serves the SPA from the same origin, so the frontend keeps calling `/api/*` without a separate frontend service.
+
+### Required GitHub Secrets
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN` if you use temporary credentials
+- `AWS_REGION`
+- `TF_STATE_BUCKET`
+- `TF_STATE_DYNAMODB_TABLE`
+- `TF_STATE_KEY` optional, defaults to `shopsmart/ecs.tfstate`
+- `TF_STATE_REGION` optional if your state bucket lives in a different region
+
+### One-Time Bootstrap
+
+Run the bootstrap stack once to create the Terraform remote state bucket and lock table:
+
+```bash
+cd infrastructure/ecs/bootstrap
+terraform init
+terraform apply -var="region=ap-south-1"
+```
+
+Copy the outputs into GitHub secrets, then run the ECS workflow from the `main` branch.
+
+### What the ECS workflow does
+
+1. Initializes Terraform remote state.
+2. Creates the ECR repository, ECS cluster, task definition, service, and load balancer.
+3. Builds the root Docker image with `VITE_API_URL=/api`.
+4. Pushes the image to ECR.
+5. Re-applies Terraform with the real image tag and desired count `1`.
+6. Waits for ECS stability and smoke-tests `GET /api/health` through the ALB.
+
 ## Required GitHub Secrets
 
 Set these in `Settings -> Secrets and variables -> Actions`:

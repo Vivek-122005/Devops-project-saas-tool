@@ -1,0 +1,6 @@
+aws_region   = "ap-south-1"
+project_name = "shopsmart"
+
+# The deploy workflow overrides these during rollout.
+container_image = "public.ecr.aws/docker/library/node:20-alpine"
+desired_count   = 0

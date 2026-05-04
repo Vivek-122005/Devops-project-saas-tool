@@ -24,12 +24,12 @@ if [ ! -f "$ROOT_DIR/frontend/.env" ]; then
 fi
 
 cd "$ROOT_DIR/backend"
-npm install
+npm ci
 npx prisma generate
 npm run db:init
 npm run db:seed
 
 cd "$ROOT_DIR/frontend"
-npm install
+npm ci
 
 echo "ShopSmart setup complete."
