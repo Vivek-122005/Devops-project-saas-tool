@@ -22,7 +22,7 @@
     "pm2": "^6.0.14"
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
+    "eslint": "^10.0.3",
     "eslint-config-prettier": "^9.1.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
